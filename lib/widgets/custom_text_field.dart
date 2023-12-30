@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../utils/app_colors.dart';
+
 enum ValidatorType { string, email }
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final ValidatorType validatorType;
-  final Function() onValueChanged;
+  final Function(String?) onValueChanged;
   final int maxLength;
   final String labelText;
   final TextInputType? keyboardType;
@@ -57,6 +59,8 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isValid = validator!(controller.text) == null;
+    String? validationMessage = validator!(controller.text);
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
       child: Row(
@@ -67,12 +71,13 @@ class CustomTextField extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isValid
-                  ? Colors.green
-                  : const Color.fromARGB(197, 255, 211, 136).withOpacity(0.3),
+                  ? AppColors.successColor
+                  : AppColors.textFieldInvalidColor,
             ),
             child: Icon(
               isValid ? Icons.check : Icons.lock,
-              color: isValid ? Colors.white : Colors.amber.withOpacity(0.6),
+              color:
+                  isValid ? AppColors.whiteColor : AppColors.iconInvalidColor,
               size: 17,
             ),
           ),
@@ -82,16 +87,19 @@ class CustomTextField extends StatelessWidget {
               controller: controller,
               validator: validator,
               keyboardType: keyboardType,
+              onChanged: (value) => onValueChanged(value),
               textAlign: TextAlign.start,
               maxLength: maxLength,
-              // remove if we need only submit button validation
-              onChanged: (value) {
-                onValueChanged();
-              },
               style: const TextStyle(fontSize: 16),
               decoration: InputDecoration(
+                errorBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.primaryColor)),
+                focusedErrorBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.primaryColor)),
+                errorStyle: const TextStyle(color: AppColors.primaryColor),
                 counterText: '',
                 labelText: labelText,
+                errorText: validationMessage,
               ),
             ),
           ),
